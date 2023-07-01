@@ -6,7 +6,7 @@ namespace Ivory.TesteEstagio.CampoMinado
 {
     class Program
     {
-        static int TAMANHO = 9;
+        const int Tamanho = 9;
 
         static void Main(string[] args)
         {
@@ -16,10 +16,11 @@ namespace Ivory.TesteEstagio.CampoMinado
 
             // Realize sua codificação a partir deste ponto, boa sorte!
 
-            List<int[]> posicoesBomba = new List<int[]>();
-            int jogada = 0;
+            var posicoesBomba = new List<int[]>();
+            var jogada = 0;
 
-            while (campoMinado.JogoStatus == 0) {
+            while (campoMinado.JogoStatus == 0)
+            {
                 Console.WriteLine($"\r\n>>> Jogada: {jogada + 1}");
 
                 Jogar(campoMinado, posicoesBomba);
@@ -27,45 +28,49 @@ namespace Ivory.TesteEstagio.CampoMinado
                 jogada++;
             }
 
-            if(campoMinado.JogoStatus == 1) {
+            if (campoMinado.JogoStatus == 1)
+            {
                 Console.WriteLine("\r\nParabéns, você ganhou o jogo!");
-            } else {
+            }
+            else
+            {
                 Console.WriteLine("\r\nGame over!");
             }
         }
 
-        static void Jogar(CampoMinado campoMinado, List<int[]> posicoesBomba) {
+        static void Jogar(CampoMinado campoMinado, List<int[]> posicoesBomba)
+        {
             string[][] tabuleiroMatriz = ConstruirMatriz(campoMinado.Tabuleiro, posicoesBomba);
 
-            for (int i = 0; i < TAMANHO; i++)
+            for (var i = 0; i < Tamanho; i++)
             {
-                for (int j = 0; j < TAMANHO; j++)
+                for (var j = 0; j < Tamanho; j++)
                 {
-                    if(EhNumeroDiferenteDeZero(tabuleiroMatriz[i][j])) {
-                        int numeroBombasCelulaAtual = int.Parse(tabuleiroMatriz[i][j]);
+                    if (EhNumeroDiferenteDeZero(tabuleiroMatriz[i][j]))
+                    {
+                        var numeroBombasCelulaAtual = int.Parse(tabuleiroMatriz[i][j]);
 
                         List<int[]> posicoesVizinhosDesconhecidos = BuscarVizinhosDesconhecidos(i, j, tabuleiroMatriz);
                         List<int[]> posicoesVizinhosBomba = BuscarVizinhosBomba(i, j, tabuleiroMatriz);
 
-                        int quantidadeVizinhosBomba = posicoesVizinhosBomba.Count;
-                        int quantidadeVizinhosDesconhecidos = posicoesVizinhosDesconhecidos.Count;
+                        var quantidadeVizinhosBomba = posicoesVizinhosBomba.Count;
+                        var quantidadeVizinhosDesconhecidos = posicoesVizinhosDesconhecidos.Count;
 
-                        if(numeroBombasCelulaAtual == quantidadeVizinhosBomba) {
-                            if (quantidadeVizinhosDesconhecidos > 0) {
+                        if (numeroBombasCelulaAtual == quantidadeVizinhosBomba)
+                        {
+                            if (quantidadeVizinhosDesconhecidos > 0)
+                            {
                                 int[] primeiroVizinho = posicoesVizinhosDesconhecidos[0];
-
                                 EscreverMatriz(tabuleiroMatriz);
-
                                 AbrirPosicao(campoMinado, primeiroVizinho[0], primeiroVizinho[1]);
-
                                 EscreverMatriz(tabuleiroMatriz);
                                 return;
                             }
-                        } else if(numeroBombasCelulaAtual == (quantidadeVizinhosDesconhecidos + quantidadeVizinhosBomba)) {
+                        }
+                        else if (numeroBombasCelulaAtual == (quantidadeVizinhosDesconhecidos + quantidadeVizinhosBomba))
+                        {
                             EscreverMatriz(tabuleiroMatriz);
-
                             MarcarBombas(posicoesVizinhosDesconhecidos, tabuleiroMatriz, posicoesBomba);
-
                             EscreverMatriz(tabuleiroMatriz);
                             return;
                         }
@@ -74,82 +79,99 @@ namespace Ivory.TesteEstagio.CampoMinado
             }
         }
 
-        static void AbrirPosicao(CampoMinado campoMinado, int linha, int coluna) {
+        static void AbrirPosicao(CampoMinado campoMinado, int linha, int coluna)
+        {
             Console.WriteLine($"Abrindo ({linha + 1}, {coluna + 1})");
-
             campoMinado.Abrir(linha + 1, coluna + 1);
         }
 
-        static void MarcarBombas(List<int[]> posicoesVizinhosDesconhecidos, string[][] tabuleiroMatriz, List<int[]> posicoesBomba) {
-            Console.WriteLine("Marcando desconhecidos como bomba:");
-            Console.WriteLine(String.Join("\n", posicoesVizinhosDesconhecidos.Select(posicao => $"({posicao[0] + 1}, {posicao[1] + 1})")));
-
+        static void MarcarBombas(List<int[]> posicoesVizinhosDesconhecidos, string[][] tabuleiroMatriz, List<int[]> posicoesBomba)
+        {
             posicoesBomba.AddRange(posicoesVizinhosDesconhecidos);
-            foreach (var vizinhoDesconhecido in posicoesVizinhosDesconhecidos) {
+            foreach (var vizinhoDesconhecido in posicoesVizinhosDesconhecidos)
+            {
                 tabuleiroMatriz[vizinhoDesconhecido[0]][vizinhoDesconhecido[1]] = "+";
             }
         }
 
-        static List<int[]> BuscarVizinhosDesconhecidos(int linha, int coluna, string[][] tabuleiroMatriz) {
+        static List<int[]> BuscarVizinhosDesconhecidos(int linha, int coluna, string[][] tabuleiroMatriz)
+        {
             return BuscarVizinhosPorTipo(linha, coluna, tabuleiroMatriz, "-");
         }
 
-        static List<int[]> BuscarVizinhosBomba(int linha, int coluna, string[][] tabuleiroMatriz) {
+        static List<int[]> BuscarVizinhosBomba(int linha, int coluna, string[][] tabuleiroMatriz)
+        {
             return BuscarVizinhosPorTipo(linha, coluna, tabuleiroMatriz, "+");
         }
 
-        static List<int[]> BuscarVizinhosPorTipo(int linha, int coluna, string[][] tabuleiroMatriz, string caracter) {
-            List<int[]> vizinhos = new List<int[]>();
+        static List<int[]> BuscarVizinhosPorTipo(int linha, int coluna, string[][] tabuleiroMatriz, string caracter)
+        {
+            var vizinhos = new List<int[]>();
 
-            int emCima = linha - 1;
-            int embaixo = linha + 1;
-            int naEsquerda = coluna - 1;
-            int naDireita = coluna + 1;
+            var emCima = linha - 1;
+            var embaixo = linha + 1;
+            var naEsquerda = coluna - 1;
+            var naDireita = coluna + 1;
 
-            if(EhPosicaoValida(emCima)) {
-                if(tabuleiroMatriz[emCima][coluna] == caracter) {
+            if (EhPosicaoValida(emCima))
+            {
+                if (tabuleiroMatriz[emCima][coluna] == caracter)
+                {
                     AdicionarPosicao(vizinhos, emCima, coluna);
                 }
 
-                if(EhPosicaoValida(naEsquerda)) {
-                    if(tabuleiroMatriz[emCima][naEsquerda] == caracter) {
+                if (EhPosicaoValida(naEsquerda))
+                {
+                    if (tabuleiroMatriz[emCima][naEsquerda] == caracter)
+                    {
                         AdicionarPosicao(vizinhos, emCima, naEsquerda);
                     }
                 }
-
-                if(EhPosicaoValida(naDireita)) {
-                    if(tabuleiroMatriz[emCima][naDireita] == caracter) {
+                if (EhPosicaoValida(naDireita))
+                {
+                    if (tabuleiroMatriz[emCima][naDireita] == caracter)
+                    {
                         AdicionarPosicao(vizinhos, emCima, naDireita);
                     }
                 }
             }
 
-            if(EhPosicaoValida(embaixo)) {
-                if(tabuleiroMatriz[embaixo][coluna] == caracter) {
-                        AdicionarPosicao(vizinhos, embaixo, coluna);
+
+            if (EhPosicaoValida(embaixo))
+            {
+                if (tabuleiroMatriz[embaixo][coluna] == caracter)
+                {
+                    AdicionarPosicao(vizinhos, embaixo, coluna);
                 }
 
-                if(EhPosicaoValida(naEsquerda)) {
-                    if(tabuleiroMatriz[embaixo][naEsquerda] == caracter) {
+                if (EhPosicaoValida(naEsquerda))
+                {
+                    if (tabuleiroMatriz[embaixo][naEsquerda] == caracter)
+                    {
                         AdicionarPosicao(vizinhos, embaixo, naEsquerda);
                     }
                 }
-
-                if(EhPosicaoValida(naDireita)) {
-                    if(tabuleiroMatriz[embaixo][naDireita] == caracter) {
+                if (EhPosicaoValida(naDireita))
+                {
+                    if (tabuleiroMatriz[embaixo][naDireita] == caracter)
+                    {
                         AdicionarPosicao(vizinhos, embaixo, naDireita);
                     }
                 }
             }
 
-            if(EhPosicaoValida(naEsquerda)) {
-                if(tabuleiroMatriz[linha][naEsquerda] == caracter) {
+            if (EhPosicaoValida(naEsquerda))
+            {
+                if (tabuleiroMatriz[linha][naEsquerda] == caracter)
+                {
                     AdicionarPosicao(vizinhos, linha, naEsquerda);
                 }
             }
 
-            if(EhPosicaoValida(naDireita)) {
-                if(tabuleiroMatriz[linha][naDireita] == caracter) {
+            if (EhPosicaoValida(naDireita))
+            {
+                if (tabuleiroMatriz[linha][naDireita] == caracter)
+                {
                     AdicionarPosicao(vizinhos, linha, naDireita);
                 }
             }
@@ -157,29 +179,36 @@ namespace Ivory.TesteEstagio.CampoMinado
             return vizinhos;
         }
 
-        static bool EhPosicaoValida(int posicao) {
-            return posicao >= 0 && posicao < TAMANHO;
+        static bool EhPosicaoValida(int posicao)
+        {
+            return posicao >= 0 && posicao < Tamanho;
         }
 
-        static void AdicionarPosicao(List<int[]> posicoes, int linha, int coluna) {
+        static void AdicionarPosicao(List<int[]> posicoes, int linha, int coluna)
+        {
             posicoes.Add(new int[2] { linha, coluna });
         }
 
-        static bool EhNumeroDiferenteDeZero(string tabuleiroCelula) {
+        static bool EhNumeroDiferenteDeZero(string tabuleiroCelula)
+        {
             return (tabuleiroCelula != "-" && tabuleiroCelula != "+") && int.Parse(tabuleiroCelula) > 0;
         }
 
-        static string[][] ConstruirMatriz(string tabuleiroTexto, List<int[]> posicoesBomba) {
-            string[][] tabuleiroMatriz = new string[TAMANHO][];
+        static string[][] ConstruirMatriz(string tabuleiroTexto, List<int[]> posicoesBomba)
+        {
+            string[][] tabuleiroMatriz = new string[Tamanho][];
             string[] linhas = tabuleiroTexto.Split("\r\n");
-            for (int i = 0; i < TAMANHO; i++)
+            for (var i = 0; i < Tamanho; i++)
             {
-                tabuleiroMatriz[i] = new string[TAMANHO];
-                for (int j = 0; j < TAMANHO; j++)
+                tabuleiroMatriz[i] = new string[Tamanho];
+                for (var j = 0; j < Tamanho; j++)
                 {
-                    if(posicoesBomba.Exists(posicao => posicao[0] == i && posicao[1] == j)) {
+                    if (posicoesBomba.Exists(posicao => posicao[0] == i && posicao[1] == j))
+                    {
                         tabuleiroMatriz[i][j] = "+";
-                    } else {
+                    }
+                    else
+                    {
                         tabuleiroMatriz[i][j] = linhas[i][j].ToString();
                     }
                 }
@@ -188,7 +217,8 @@ namespace Ivory.TesteEstagio.CampoMinado
             return tabuleiroMatriz;
         }
 
-        static void EscreverMatriz(string[][] tabuleiroMatriz) {
+        static void EscreverMatriz(string[][] tabuleiroMatriz)
+        {
             Console.WriteLine("=================");
             foreach (var linha in tabuleiroMatriz)
             {
